@@ -58,10 +58,11 @@ public class Administracion {
 		int opcionSubmenu;
 		teclado = new Scanner(System.in);
 		
-		Cliente cliente;
+		Cliente cliente = null;
 		Empleado empleado;
 		Incidente incidente;
 		Servicio servicio;
+		ConectorSQL conector;
 		
 		
 		do {
@@ -95,43 +96,58 @@ public class Administracion {
 					}
 					switch (opcionSubmenu) {
 					case CREAR:
+						
 						cliente = crearCliente(clientes);
 						clientes.add(cliente);
-						ConectorSQL conector = new ConectorSQL(); 
+						conector = new ConectorSQL(); 
 						conector.crearCliente(cliente);						
 						continuar();						
-						
+					
 						break;
 						
 					case BUSCAR:
+												
+						conector = new ConectorSQL(); 
 						
-						if (!clientes.isEmpty()) {
-							cliente = buscarCliente(clientes);
-							if (cliente != null) {
-								mostrarDatosCliente(cliente);
+						int cuit= capturaNumeroEntero("Ingresar cuit para buscar");
+						
+						cliente = conector.buscarClientePorCuit(cuit);
+						
+								if (!clientes.isEmpty()) {
+									cliente = buscarCliente(clientes);
+									if (cliente != null) {
+										mostrarDatosCliente(cliente);
+								continuar();
 							} else {
 								mostrarMensaje("No hay cliente con el numero especificado ");
 							}
 						} else {
 							mostrarMensaje("No hay clientes para mostrar");
-						}
-						
+						}						
 						break;
+						
 					case ACTUALIZAR:
 						
+						conector = new ConectorSQL(); 	
+												
+						//cuit= capturaNumeroEntero("Ingresar cuit para actualiza el cliente");
+								
+						actualizarCliente(cliente);
 						if (!clientes.isEmpty()) {
-							cliente = buscarCliente(clientes);
+							actualizarCliente(cliente);
+							conector.actualizarCliente(cliente);
 							if (cliente != null) {
-								actualizarCliente(cliente);
-								mostrarDatosCliente(cliente);
+							
+
 							} else {
-								mostrarMensaje("No hay cliente con el nÃºmero especificado ");
+								mostrarMensaje("No hay cliente con el número especificado ");
 							}
 						} else {
 							mostrarMensaje("No hay cliente para poder actualizar ");
 						}
 						
 						break;
+						
 					case ELIMINAR:
 						
 						if (!clientes.isEmpty()) {
@@ -178,7 +194,7 @@ public class Administracion {
 							if (servicio != null) {
 								mostrarDatosServicio(servicio);
 							} else {
-								mostrarMensaje("No se encontrÃ³ el servicio ");
+								mostrarMensaje("No se encontró el servicio ");
 							}
 						} else {
 							mostrarMensaje("No se existe servicio, no se puede buscar ");
@@ -294,7 +310,7 @@ public class Administracion {
 			case GESTION_INCIDENTES:
 				do {
 					do {
-						// mostrarSubmenuFacturacion();
+						
 						opcionSubmenu = capturaNumeroEntero("Digite la operacion a realizar");
 						if (opcionSubmenu < SALIR || opcionSubmenu > ELIMINAR) {
 							mostrarMensaje("Ingrese un valor entre el 0 y 2 ");
@@ -376,10 +392,7 @@ public class Administracion {
 
 			}
 		}
-		*/
-		
-	
-	
+		*/	
 	
 }
 		
@@ -577,10 +590,12 @@ public class Administracion {
 		}
 		private static void actualizarCliente(Cliente cliente) {
 			System.out.println("--- 3. Actualizar Cliente ---");
-
+			
+			
 			String nombres = capturarCadenaCaracteres("Actualice los nombres del cliente: ");
 			String apellidos = capturarCadenaCaracteres("Actualice los apellidos del cliente: ");
-			int telefono;
+			String direccion = capturarCadenaCaracteres("Actualizar la direccion: ");
+			int telefono;			
 			do {
 				telefono = capturaNumeroEntero("Actualizar el telefono del cliente: ");
 
@@ -591,21 +606,25 @@ public class Administracion {
 
 			} while (telefono <= 0);
 
-			String direccion = capturarCadenaCaracteres("Actualizar la direccion: ");
-			String correo;
-			while (true) {
-				correo = capturarCadenaCaracteres("Actualizar el Email del cliente: ");
-				if (!correoElectronicoValido(correo)) {
-					mostrarMensaje("Ingreso incorrecto del valor Email");
+			int idServi;			
+			do {
+				idServi = capturaNumeroEntero("Actualizar el codigo de servicio del cliente: ");
+
+				if (idServi <= 0) {
+					mostrarMensaje("El codigo servicio tiene que ser un numero valido ");
 					continuar();
-					
 				}
-				break;
-			}
+
+			} while (idServi <= 0);
+			
+			
 			cliente.setNombreCliente(nombres);
 			cliente.setApellidoCliente(apellidos);
-			cliente.setTelefonoCliente(telefono);
 			cliente.setDireccionCliente(direccion);
+			cliente.setIdServicio(idServi);
+			cliente.setTelefonoCliente(telefono);
+			
+			
 		
 		}
 

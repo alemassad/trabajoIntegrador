@@ -43,26 +43,24 @@ import clases.Incidente;
 	/*
 	 * Bauscar un cliente por su DNI
 	 */
-	public Cliente buscarClientePorCuit(String cuit) {
+	public Cliente buscarClientePorCuit(int cuit) {
 		final String SQL = "SELECT * FROM cliente WHERE cuit = ?";
 		Connection conexion = conectar();
 		try {
 			PreparedStatement pstmt = conexion.prepareStatement(SQL);
-			pstmt.setString(1, cuit);
+			pstmt.setInt(1, cuit);
 			ResultSet rst = pstmt.executeQuery();
 			if (rst.next()) {
-				Cliente cliente = new Cliente(0, SQL, SQL, SQL, 0, 0);
-				cliente.setCuitCliente(rst.getInt("cuitCliente"));
-				cliente.setNombreCliente(rst.getString("nombreCliente"));
-				cliente.setApellidoCliente(rst.getString("apellidoCliente"));
-				cliente.setDireccionCliente(rst.getString("direccionCliente"));
-				cliente.setTelefonoCliente(rst.getInt("telefonoCliente"));
+				System.out.println("===================== CLIENTE ==================================");				
+				System.out.println("CUIT: "+rst.getInt("cuit"));
+				System.out.println("NOMBRE: "+rst.getString("nombre"));
+				System.out.println("APELLIDO: "+rst.getString("apellido"));
+				System.out.println("DIRECCION: "+rst.getString("direccion"));
+				System.out.println("TELEFONO: "+rst.getInt("telefono"));
 				
-
 				conexion.close();
-				return cliente;
-
 			}
+			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -116,19 +114,20 @@ import clases.Incidente;
 	 */
 	public boolean actualizarCliente(Cliente cliente) {
 
-		final String SQL = "UPDATE cliente SET nombres = ?, apellidos = ?, telefono = ?, direccion = ?,  WHERE dni = ?";
+		final String SQL = "UPDATE cliente SET nombre = ?, apellido = ?, telefono = ?, direccion = ?,  WHERE cuit = ?";
 
 		Connection conexion = conectar();
 
 		try {
 			PreparedStatement pstmt = conexion.prepareStatement(SQL);
 
-			pstmt.setString(2, cliente.getNombreCliente());
-			pstmt.setString(3, cliente.getApellidoCliente());
-			pstmt.setInt(5, cliente.getTelefonoCliente());
-			pstmt.setString(4, cliente.getDireccionCliente());
-			
 			pstmt.setInt(1, cliente.getCuitCliente());
+			pstmt.setString(2, cliente.getNombreCliente());
+			pstmt.setString(3, cliente.getApellidoCliente());			
+			pstmt.setInt(6, cliente.getTelefonoCliente());
+			pstmt.setString(4, cliente.getDireccionCliente());
+			pstmt.setInt(5, cliente.getIdServicio());
+			
 			int datosActuales = pstmt.executeUpdate();
 
 			conexion.close();
